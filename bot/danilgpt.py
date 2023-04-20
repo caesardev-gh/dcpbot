@@ -13,7 +13,7 @@ openai.api_key = os.getenv("OPENAI_API_KEY")
 
 
 class DanilGPT:
-    MESSAGES_LIMIT = 30
+    MESSAGES_LIMIT = 20
     MODEL = 'gpt-3.5-turbo'
     SYSTEM_ROLE = "Ты будешь получать сообщения в формате: " \
                   "Информация об отправителе сообщения: {user.to_json()}\nСообщение: {message.text}." \
@@ -47,20 +47,15 @@ class DanilGPT:
         return self.role_message + messages[::-1]
 
     async def get_response(self, chat_id: int, user_id: int, text: str) -> str:
-        user = models.User.objects.get(user_id=user_id)
-        messages = self.get_messages(chat_id) + [
-            {
-                'role': 'user',
-                'content': f"Информация об отправителе сообщения: {user.to_json()}\n"
-                           f"Сообщение: {text}"
-            }
-        ]
+        messages = self.get_messages(chat_id)
         logger.info(messages)
 
         response = await openai.ChatCompletion.acreate(
             model=self.MODEL,
             messages=messages
         )
+
+        logger.info(response)
 
         new_message = models.Message.objects.create(
             role=models.Message.ROLE.ASSISTANT,
