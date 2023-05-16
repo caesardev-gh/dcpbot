@@ -24,6 +24,8 @@ class User(models.Model):
             "last_name": self.last_name,
             "full_name": self.full_name,
             "link": self.link,
+            "joined_at": self.joined_at.strftime("%d.%m.%Y %H:%M:%S"),
+            "last_seen": self.last_seen.strftime("%d.%m.%Y %H:%M:%S"),
         }
 
     @property
